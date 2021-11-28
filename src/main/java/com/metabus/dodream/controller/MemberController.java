@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.protocol.HTTP;
 import org.apache.tomcat.util.json.JSONParser;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -99,12 +100,10 @@ public class MemberController {
     /* 계좌 정보 조회 */
     @GetMapping("/detail")
     public ResponseEntity<String> accountDetail(@RequestHeader Map<String, String> headers) throws IOException {
-        log.info(headers.get("accesstoken").toString());
         String accessToken = headers.get("accesstoken");
-        log.info(accessToken);
-
         HttpHeaders response_header = new HttpHeaders();
         response_header.set("content-type", "application/json");
+
         try {
             NH_DATA_Dto dto = nh_service.getDataWithAccessToken(accessToken);
             String result = nh_service.getMyAccount(dto);
@@ -122,28 +121,28 @@ public class MemberController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-
-    /* 농협 계좌 송금 */
-    @PostMapping("/transfernh")
-    public ResponseEntity<String> transferNh(@RequestBody Map<String, String> param) throws IOException {
-        log.info("클라이언트로 부터 송금 요청 받음");
-        log.info(param.get("id"));
-        log.info(param.get("pwd"));
-        log.info(param.get("acno"));
-        log.info(param.get("tram"));
-        log.info("통과 "+ param.get("pwd"));
-
-        Map<String, String> map = memberService.isValidMember(param.get("id"), param.get("pwd"));
-        if(map.get("result").equals("true")){
-            NH_DATA_Dto dto = nh_service.getData(param.get("id"));
-            log.info(dto.toString());
-            String result = nh_service.doAccountTransferNh(dto, param.get("acno"), param.get("tram"));
-            log.info(result);
-            return new ResponseEntity<>(result, HttpStatus.OK);
-        }else{
-            log.info("못찾음");
+    /* TODO */
+    /* 농협 입금 이체 */
+    @PostMapping("/transferDeposit")
+    public ResponseEntity<String> transferNh(@RequestHeader Map<String, String> headers, @RequestBody Map<String, String> param) throws IOException {
+        // log.info("클라이언트로 부터 입금 받음");
+        String accessToken = headers.get("accesstoken");
+        HttpHeaders response_header = new HttpHeaders();
+        response_header.set("content-type", "application/json");
+        String acno = param.get("acno");
+        String tram = param.get("tram");
+        try{
+            NH_DATA_Dto dto = nh_service.getDataWithAccessToken(accessToken);
+            String result = nh_service.doAccountTransferDeposit(dto,acno,tram);
+            JSONObject jObject = new JSONObject(result);
+            JSONObject response = new JSONObject();
+            response.put("result", true);
+            response.put("message", "입금성공");
+            return new ResponseEntity<>(response.toString(),response_header, HttpStatus.OK);
+        } catch (JSONException e) {
+            log.info("NOT FOUND");
+            e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-
 }

@@ -61,9 +61,8 @@ public class NH_Service {
 
     /* NH REST API에 요청 */
     public String getAccountData(NH_DATA_Dto dto) throws IOException {
-        JsonObject dataForHeader = new JsonObject();
         String api = "/InquireDepositorAccountNumber.nh";
-
+        JsonObject dataForHeader = new JsonObject();
         dataForHeader.addProperty("ApiNm", "InquireDepositorAccountNumber"); // api 요청명
         dataForHeader.addProperty("Tsymd", getTodayDate()); // 오늘 날짜 yyyyMMdd 형태
         dataForHeader.addProperty("Trtm", "112428"); // 전송 시각, 고정되어있네..?
@@ -96,9 +95,9 @@ public class NH_Service {
 
     /* NH 계좌 조회 */
     public String getMyAccount(NH_DATA_Dto dto) throws IOException {
-        JsonObject dataForHeader = new JsonObject();
         String api ="/InquireBalance.nh";
-
+        /* 입력 폼 */
+        JsonObject dataForHeader = new JsonObject();
         dataForHeader.addProperty("ApiNm","InquireBalance");
         dataForHeader.addProperty("Tsymd", getTodayDate()); // 오늘 날짜 yyyyMMdd 형태
         dataForHeader.addProperty("Trtm", "112428"); // 전송 시각, 고정되어있네..?
@@ -116,10 +115,10 @@ public class NH_Service {
     }
 
     /* 송금 */
-    public String doAccountTransferNh(NH_DATA_Dto dto, String acno, String tram) throws IOException {
-        JsonObject dataForHeader = new JsonObject();
+    //acno 어떻게든 돈이 들어갈 계좌
+    public String doAccountTransferDeposit(NH_DATA_Dto dto, String acno, String tram) throws IOException {
         String api = "/ReceivedTransferAccountNumber.nh";
-
+        JsonObject dataForHeader = new JsonObject();
         dataForHeader.addProperty("ApiNm", "ReceivedTransferAccountNumber"); // api 요청명
         dataForHeader.addProperty("Tsymd", getTodayDate()); // 오늘 날짜 yyyyMMdd 형태
         dataForHeader.addProperty("Trtm", "112428"); // 전송 시각, 고정되어있네..?
@@ -131,9 +130,32 @@ public class NH_Service {
         JsonObject request = new JsonObject();
         request.add("Header", dataForHeader);
         request.addProperty("Bncd", "011");
-        request.addProperty("Acno", acno);
+        request.addProperty("Acno", acno); // 돈이 어떻게든 들어갈 계좌
         request.addProperty("Tram", tram);
 
         return httpRequestService.postRequest(BASE_URL+api, request);
+    }
+    /* 출금 */
+
+
+    /* 내 계좌 정보 */
+
+    public String checkMyAccount(NH_DATA_Dto dto) throws IOException{
+        String api="/InquireBalance.nh";
+        JsonObject dataForHeader = new JsonObject();
+        dataForHeader.addProperty("ApiNm", "ReceivedTransferAccountNumber"); // api 요청명
+        dataForHeader.addProperty("Tsymd", getTodayDate()); // 오늘 날짜 yyyyMMdd 형태
+        dataForHeader.addProperty("Trtm", "112428"); // 전송 시각, 고정되어있네..?
+        dataForHeader.addProperty("Iscd", dto.getIscd()); // 기관 코드
+        dataForHeader.addProperty("FintechApsno", FintechApsno);
+        dataForHeader.addProperty("ApiSvcCd", "ReceivedTransferA"); // API 서비스 코드
+        dataForHeader.addProperty("IsTuno", randInt(12)); // 임의 숫자 뽑아야함
+        dataForHeader.addProperty("AccessToken", dto.getAccessToken()); // accessToken
+        JsonObject request = new JsonObject();
+        request.add("Header", dataForHeader);
+        request.addProperty("FinAcno", dto.getFinAcno());
+
+        return httpRequestService.postRequest(BASE_URL+api, request);
+
     }
 }
