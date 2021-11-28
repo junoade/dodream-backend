@@ -21,7 +21,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 public class FileController {
-    public static String FILE_PATH = "C:\\Users\\ChoiJunho\\Desktop\\test";
+    public static String FILE_PATH = "/home/ec2-user/app/TEST_META/";
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> upload(@RequestBody MultipartFile file) throws IOException, JSONException {
         String fileName = file.getOriginalFilename();
