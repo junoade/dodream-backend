@@ -49,7 +49,6 @@ public class NH_Service {
 
     /* NH REST API에 요청 */
     public String getAccountData(NH_DATA_Dto dto) throws IOException {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonObject dataForHeader = new JsonObject();
         String api = "/InquireDepositorAccountNumber.nh";
 
@@ -82,4 +81,9 @@ public class NH_Service {
         }
         return result.toString();
     }
+
+    /* NH 계좌 조회 */
+    /*public String getMyAccount(NH_DATA_Dto dto){
+
+    }*/
 }

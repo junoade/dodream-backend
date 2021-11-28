@@ -14,10 +14,7 @@ import org.apache.http.protocol.HTTP;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.Map;
@@ -73,7 +70,6 @@ public class MemberController {
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody Map<String, String> param) throws IOException {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
         log.info("클라이언트로 부터 AUTH 인증 요청 받음");
         log.info(param.get("id"));
         log.info(param.get("pwd"));
@@ -89,5 +85,12 @@ public class MemberController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    /* 계좌 정보 조회 *//*
+    @GetMapping("/detail")
+    public ResponseEntity<String> accountDetail(@RequestParam("id") String id){
+
+
+    }*/
 
 }
