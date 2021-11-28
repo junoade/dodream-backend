@@ -107,4 +107,27 @@ public class MemberController {
         }
     }
 
+    /* 농협 계좌 송금 */
+    @PostMapping("/transfernh")
+    public ResponseEntity<String> transferNh(@RequestBody Map<String, String> param) throws IOException {
+        log.info("클라이언트로 부터 송금 요청 받음");
+        log.info(param.get("id"));
+        log.info(param.get("pwd"));
+        log.info(param.get("acno"));
+        log.info(param.get("tram"));
+        log.info("통과 "+ param.get("pwd"));
+
+        Map<String, String> map = memberService.isValidMember(param.get("id"), param.get("pwd"));
+        if(map.get("result").equals("true")){
+            NH_DATA_Dto dto = nh_service.getData(param.get("id"));
+            log.info(dto.toString());
+            String result = nh_service.doAccountTransferNh(dto, param.get("acno"), param.get("tram"));
+            log.info(result);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        }else{
+            log.info("못찾음");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
 }

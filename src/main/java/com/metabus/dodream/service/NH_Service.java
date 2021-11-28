@@ -114,4 +114,26 @@ public class NH_Service {
         return httpRequestService.postRequest(BASE_URL+api,request);
 
     }
+
+    /* 송금 */
+    public String doAccountTransferNh(NH_DATA_Dto dto, String acno, String tram) throws IOException {
+        JsonObject dataForHeader = new JsonObject();
+        String api = "/ReceivedTransferAccountNumber.nh";
+
+        dataForHeader.addProperty("ApiNm", "ReceivedTransferAccountNumber"); // api 요청명
+        dataForHeader.addProperty("Tsymd", getTodayDate()); // 오늘 날짜 yyyyMMdd 형태
+        dataForHeader.addProperty("Trtm", "112428"); // 전송 시각, 고정되어있네..?
+        dataForHeader.addProperty("Iscd", dto.getIscd()); // 기관 코드
+        dataForHeader.addProperty("FintechApsno", FintechApsno);
+        dataForHeader.addProperty("ApiSvcCd", "DrawingTransferA"); // API 서비스 코드
+        dataForHeader.addProperty("IsTuno", randInt(12)); // 임의 숫자 뽑아야함
+        dataForHeader.addProperty("AccessToken", dto.getAccessToken()); // accessToken
+        JsonObject request = new JsonObject();
+        request.add("Header", dataForHeader);
+        request.addProperty("Bncd", "011");
+        request.addProperty("Acno", acno);
+        request.addProperty("Tram", tram);
+
+        return httpRequestService.postRequest(BASE_URL+api, request);
+    }
 }
