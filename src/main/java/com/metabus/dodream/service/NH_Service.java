@@ -47,6 +47,18 @@ public class NH_Service {
                 .build()).orElse(null);
     }
 
+    public NH_DATA_Dto getDataWithAccessToken(String accessToken){
+        Optional<NH_DATA> nh_data = nh_repository.getAccessToken(accessToken);
+        return nh_data.map(nhData -> NH_DATA_Dto.builder()
+                .Iscd(nhData.getIscd())
+                .accessToken(nhData.getAccessToken())
+                .fintechAcno(nhData.getFintechAcno())
+                .bncd(nhData.getBncd())
+                .acno(nhData.getAcno())
+                .finAcno(nhData.getFinAcno())
+                .build()).orElse(null);
+    }
+
     /* NH REST API에 요청 */
     public String getAccountData(NH_DATA_Dto dto) throws IOException {
         JsonObject dataForHeader = new JsonObject();
@@ -83,7 +95,23 @@ public class NH_Service {
     }
 
     /* NH 계좌 조회 */
-    /*public String getMyAccount(NH_DATA_Dto dto){
+    public String getMyAccount(NH_DATA_Dto dto) throws IOException {
+        JsonObject dataForHeader = new JsonObject();
+        String api ="/InquireBalance.nh";
 
-    }*/
+        dataForHeader.addProperty("ApiNm","InquireBalance");
+        dataForHeader.addProperty("Tsymd", getTodayDate()); // 오늘 날짜 yyyyMMdd 형태
+        dataForHeader.addProperty("Trtm", "112428"); // 전송 시각, 고정되어있네..?
+        dataForHeader.addProperty("Iscd", dto.getIscd()); // 기관 코드
+        dataForHeader.addProperty("FintechApsno", FintechApsno);
+        dataForHeader.addProperty("ApiSvcCd", "DrawingTransferA"); // API 서비스 코드
+        dataForHeader.addProperty("IsTuno", randInt(12)); // 임의 숫자 뽑아야함
+        dataForHeader.addProperty("AccessToken", dto.getAccessToken()); // accessToken
+        JsonObject request = new JsonObject();
+        request.add("Header", dataForHeader);
+        request.addProperty("FinAcno", dto.getFinAcno());
+
+        return httpRequestService.postRequest(BASE_URL+api,request);
+
+    }
 }

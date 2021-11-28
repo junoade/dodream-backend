@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -20,9 +22,13 @@ public class MemberService {
     private MemberRepository memberRepository;
 
     @Transactional
-    public boolean isValidMember(String id, String pwd){
+    public Map<String, String> isValidMember(String id, String pwd){
         Optional<Member> member = memberRepository.findById(id);
-        return member.map(value -> value.getPwd().equals(pwd)).orElse(false);
+        Map<String, String> map = new HashMap<>();
+        map.put("result", "true");
+        map.put("username", member.get().getName());
+        return map;
         //return member.map(value -> value.getPwd().equals(pwd)).orElse(false);
     }
+
 }
