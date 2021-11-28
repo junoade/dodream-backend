@@ -35,8 +35,13 @@ public class FileController {
         String fileName = file.getOriginalFilename();
 
         JsonObject param = new JsonObject();
+        File mkdir = new File(DIRECTORY);
+        if(!mkdir.exists()){
+            mkdir.mkdir();
+        }
         if(!file.getOriginalFilename().isEmpty()) {
-            file.transferTo(new File(DIRECTORY, fileName));
+
+            file.transferTo(new File(DIRECTORY+"/"+fileName));
             param.addProperty("msg", "File uploaded successfully.");
             param.addProperty("fileName", fileName);
         }else {
@@ -59,7 +64,10 @@ public class FileController {
     public ResponseEntity<String> test(@RequestParam("file") MultipartFile file, @RequestParam("wallet") String wallet,
                                        @RequestParam("name") String name, @RequestParam("id") String id ) throws IOException {
         String fileName = file.getOriginalFilename();
-
+        File mkdir = new File(DIRECTORY);
+        if(!mkdir.exists()){
+            mkdir.mkdir();
+        }
         JsonObject param = new JsonObject();
         HttpHeaders response_header = new HttpHeaders();
         response_header.set("content-type", "application/json");
