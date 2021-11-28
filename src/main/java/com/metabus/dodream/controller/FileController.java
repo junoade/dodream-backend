@@ -3,6 +3,7 @@ package com.metabus.dodream.controller;
 import com.google.gson.JsonObject;
 import com.metabus.dodream.config.path.PathDeterminant;
 import com.metabus.dodream.repository.MemberRepository;
+import com.metabus.dodream.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
@@ -31,72 +32,45 @@ import java.util.Map;
 public class FileController {
 
     @Autowired
-    MemberRepository memberRepository;
+    MemberService memberService;
 
 
     PathDeterminant pathDeterminant = new PathDeterminant();
     private final String DIRECTORY = pathDeterminant.getOS_TYPE();
 
-
-
-
-    @PostMapping(value = "/deprecated", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> upload(@RequestBody MultipartFile file) throws IOException, JSONException {
-        String fileName = file.getOriginalFilename();
-
-        JsonObject param = new JsonObject();
-        File mkdir = new File(DIRECTORY);
-        if(!mkdir.exists()){
-            mkdir.mkdir();
-        }
-        if(!file.getOriginalFilename().isEmpty()) {
-
-            file.transferTo(new File(DIRECTORY+fileName));
-            param.addProperty("msg", "File uploaded successfully.");
-            param.addProperty("fileName", fileName);
-        }else {
-            param.addProperty("msg", "Please select a valid mediaFile..");
-        }
-
-        HttpHeaders response_header = new HttpHeaders();
-        response_header.set("content-type", "application/json");
-
-        JSONObject response = new JSONObject();
-        response.put("msg", param.get("msg"));
-        response.put("msg", param.get("fileName"));
-
-        return new ResponseEntity<>(response.toString(),response_header, HttpStatus.OK);
-
-    }
-
-
     @PostMapping("/upload")
     public ResponseEntity<String> test(@RequestParam("file") MultipartFile file, @RequestParam("wallet") String wallet,
-                                       @RequestParam("name") String name, @RequestParam("id") String id ) throws IOException {
+                                       @RequestParam("name") String name, @RequestParam("id") String id) throws IOException {
 
-        String fileName = file.getOriginalFilename();
-        File saveFile = new File(DIRECTORY+fileName);
-        if(!saveFile.exists()){
-            saveFile.getParentFile().mkdirs();
+        log.info("id"+id);
+        if (memberService.isValidMember(id)) {
+            String fileName = file.getOriginalFilename();
+            File saveFile = new File(DIRECTORY + fileName);
+            if (!saveFile.exists()) {
+                saveFile.getParentFile().mkdirs();
+            }
+            JsonObject param = new JsonObject();
+            HttpHeaders response_header = new HttpHeaders();
+            response_header.set("content-type", "application/json");
+            if (!file.getOriginalFilename().isEmpty()) {
+                file.transferTo(saveFile);
+                param.addProperty("result", true);
+                param.addProperty("msg", "File uploaded successfully.");
+                param.addProperty("fileName", fileName);
+                param.addProperty("wallet", wallet);
+                param.addProperty("name", name);
+                param.addProperty("id", id);
+
+
+            } else {
+                param.addProperty("msg", "Please select a valid mediaFile..");
+            }
+            return new ResponseEntity<>(param.toString(), response_header, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        JsonObject param = new JsonObject();
-        HttpHeaders response_header = new HttpHeaders();
-        response_header.set("content-type", "application/json");
-        if(!file.getOriginalFilename().isEmpty()) {
-            file.transferTo(saveFile);
-            param.addProperty("result",true);
-            param.addProperty("msg", "File uploaded successfully.");
-            param.addProperty("fileName", fileName);
-            param.addProperty("wallet", wallet);
-            param.addProperty("name", name);
-            param.addProperty("id", id);
 
 
-        }else {
-            param.addProperty("msg", "Please select a valid mediaFile..");
-        }
-
-        return new ResponseEntity<>(param.toString(),response_header, HttpStatus.OK);
     }
 
 
