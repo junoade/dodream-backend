@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,6 +17,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 
 @RestController
@@ -25,7 +30,7 @@ public class FileController {
 
 
     PathDeterminant pathDeterminant = new PathDeterminant();
-    private String DIRECTORY = pathDeterminant.getOS_TYPE();
+    private final String DIRECTORY = pathDeterminant.getOS_TYPE();
 
 
 
@@ -87,5 +92,29 @@ public class FileController {
 
         return new ResponseEntity<>(param.toString(),response_header, HttpStatus.OK);
     }
+
+
+    @GetMapping("/display")
+    public ResponseEntity<Resource> display(@RequestParam(value = "filename") String filename) throws IOException {
+        /*String path = "C:\\TestQR\\qrImg\\";*/
+        Resource resource = new FileSystemResource(DIRECTORY + filename);
+
+        if (!resource.exists()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        HttpHeaders header = new HttpHeaders();
+        Path filePath = null;
+        try {
+            filePath = Paths.get(DIRECTORY + filename);
+            header.add("Content-Type", Files.probeContentType(filePath));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return new ResponseEntity<>(resource, header, HttpStatus.OK);
+
+    }
+
 
 }
