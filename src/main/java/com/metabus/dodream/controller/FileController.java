@@ -2,10 +2,12 @@ package com.metabus.dodream.controller;
 
 import com.google.gson.JsonObject;
 import com.metabus.dodream.config.path.PathDeterminant;
+import com.metabus.dodream.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -28,6 +30,9 @@ import java.util.Map;
 @Slf4j
 public class FileController {
 
+    @Autowired
+    MemberRepository memberRepository;
+
 
     PathDeterminant pathDeterminant = new PathDeterminant();
     private final String DIRECTORY = pathDeterminant.getOS_TYPE();
@@ -46,7 +51,7 @@ public class FileController {
         }
         if(!file.getOriginalFilename().isEmpty()) {
 
-            file.transferTo(new File(DIRECTORY+"/"+fileName));
+            file.transferTo(new File(DIRECTORY+fileName));
             param.addProperty("msg", "File uploaded successfully.");
             param.addProperty("fileName", fileName);
         }else {
@@ -68,16 +73,17 @@ public class FileController {
     @PostMapping("/upload")
     public ResponseEntity<String> test(@RequestParam("file") MultipartFile file, @RequestParam("wallet") String wallet,
                                        @RequestParam("name") String name, @RequestParam("id") String id ) throws IOException {
+
         String fileName = file.getOriginalFilename();
-        File mkdir = new File(DIRECTORY);
-        if(!mkdir.exists()){
-            mkdir.mkdir();
+        File saveFile = new File(DIRECTORY+fileName);
+        if(!saveFile.exists()){
+            saveFile.getParentFile().mkdirs();
         }
         JsonObject param = new JsonObject();
         HttpHeaders response_header = new HttpHeaders();
         response_header.set("content-type", "application/json");
         if(!file.getOriginalFilename().isEmpty()) {
-            file.transferTo(new File(DIRECTORY, fileName));
+            file.transferTo(saveFile);
             param.addProperty("result",true);
             param.addProperty("msg", "File uploaded successfully.");
             param.addProperty("fileName", fileName);

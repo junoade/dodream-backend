@@ -14,7 +14,7 @@ public class PathDeterminant {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMdd");
         String dailyDirectory = dtf.format(now);
         if(isLINUX()){
-            this.OS_TYPE = "/home/ec2-user/app/TEST_META/"+"20211128"+"/";
+            this.OS_TYPE = "/home/ec2-user/app/TEST_META/"+dailyDirectory+"/";
         }else if(isWindow()){
             this.OS_TYPE = "C:\\TestMETA\\"+dailyDirectory+"\\";
         }else{
