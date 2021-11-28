@@ -16,4 +16,5 @@ public interface NH_Repository extends JpaRepository<NH_DATA,String> {
 
     /*@Query(value="SELECT N FROM NH_DATA N WHERE N.id = :id")
     Optional<NH_DATA> getAccessTokenByValidId(@Param("id") String id);*/
+
 }

@@ -49,6 +49,7 @@ public class NH_Service {
 
     public NH_DATA_Dto getDataWithAccessToken(String accessToken){
         Optional<NH_DATA> nh_data = nh_repository.getAccessToken(accessToken);
+        log.info("NH_DATE _->" + nh_data.get().toString());
         return nh_data.map(nhData -> NH_DATA_Dto.builder()
                 .Iscd(nhData.getIscd())
                 .accessToken(nhData.getAccessToken())

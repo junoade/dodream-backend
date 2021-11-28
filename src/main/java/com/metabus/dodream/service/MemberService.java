@@ -31,4 +31,9 @@ public class MemberService {
         //return member.map(value -> value.getPwd().equals(pwd)).orElse(false);
     }
 
+    @Transactional
+    public boolean isValidMember(String id){
+        return memberRepository.findById(id).isPresent();
+    }
+
 }

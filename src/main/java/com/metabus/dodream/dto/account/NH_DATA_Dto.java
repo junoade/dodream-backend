@@ -11,7 +11,7 @@ import lombok.ToString;
 @Data
 @NoArgsConstructor
 public class NH_DATA_Dto {
-    private String id;
+    private Member id;
     private String Iscd;    // 기관코드(공통 -기관약정 시 발급된 ‘핀테크 기관코드’를 말함 “마이페이지 > 서비스 관리 > 기관코드”
     private String accessToken; // 인증키(공통 “마이페이지 > 서비스 관리 > 인증키”)
     private String fintechAcno; // 핀테크 앱 일련번호(공통 -핀테크서비스 약정 시 발급된 ‘핀테크 앱 일련번호’ -테스트 과정에서는 ‘001’로 고정되며 핀테크 서비스 약정시 발급된 ‘핀테크 앱 일련번호’로 교체해야 함)
@@ -21,7 +21,7 @@ public class NH_DATA_Dto {
 
     public NH_DATA toEntity(){
         return NH_DATA.builder()
-                .id(id)
+                .member(id)
                 .Iscd(Iscd)
                 .accessToken(accessToken)
                 .fintechAcno(fintechAcno)
@@ -32,7 +32,7 @@ public class NH_DATA_Dto {
     }
 
     @Builder
-    public NH_DATA_Dto(String id, String Iscd, String accessToken, String fintechAcno, String bncd, String acno, String finAcno){
+    public NH_DATA_Dto(Member id, String Iscd, String accessToken, String fintechAcno, String bncd, String acno, String finAcno){
         this.id = id;
         this.Iscd = Iscd;
         this.accessToken = accessToken;
