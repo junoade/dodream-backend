@@ -4,6 +4,7 @@ package com.metabus.dodream.controller;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.metabus.dodream.domain.account.Member;
 import com.metabus.dodream.dto.account.NH_DATA_Dto;
 import com.metabus.dodream.service.HttpRequestService;
@@ -12,7 +13,10 @@ import com.metabus.dodream.service.NH_Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.protocol.HTTP;
+import org.apache.tomcat.util.json.JSONParser;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -81,8 +85,11 @@ public class MemberController {
             response.addProperty("result", true);
             response.addProperty("accesstoken", dto.getAccessToken());
             response.addProperty("name", map.get("username"));
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("content-type", "application/json");
 
-            return new ResponseEntity<>(response.toString(), HttpStatus.OK);
+            return new ResponseEntity<>(response.toString(), headers,HttpStatus.OK);
+
         }else{
             log.info("못찾음");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -92,14 +99,23 @@ public class MemberController {
     /* 계좌 정보 조회 */
     @GetMapping("/detail")
     public ResponseEntity<String> accountDetail(@RequestHeader Map<String, String> headers) throws IOException {
-        log.info(headers.get("custom-accesstoken").toString());
-        String accessToken = headers.get("custom-accesstoken");
+        log.info(headers.get("accesstoken").toString());
+        String accessToken = headers.get("accesstoken");
         log.info(accessToken);
+
+        HttpHeaders response_header = new HttpHeaders();
+        response_header.set("content-type", "application/json");
         try {
             NH_DATA_Dto dto = nh_service.getDataWithAccessToken(accessToken);
             String result = nh_service.getMyAccount(dto);
+            JSONObject jObject = new JSONObject(result);
+            JSONObject response = new JSONObject();
+            response.put("result", true);
+            response.put("Ldbl", jObject.getString("Ldbl"));
+            response.put("RlpmAbamt", jObject.getString("RlpmAbamt"));
+
             log.info(result);
-            return new ResponseEntity<>(result, HttpStatus.OK);
+            return new ResponseEntity<>(response.toString(),response_header, HttpStatus.OK);
         }catch(Exception e){
             log.info("NOT FOUND");
             e.printStackTrace();
