@@ -16,6 +16,8 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.Random;
 
+import static com.metabus.dodream.utils.Hashing.getRandomString;
+
 @Service
 @Slf4j
 @AllArgsConstructor
@@ -25,16 +27,6 @@ public class WalletService {
     WalletRepository walletRepository;
 
     private final static int LENGTH = 10;
-
-    public static String getRandomString(int length){
-        int leftLimit = 48; // numeral '0'
-        int rightLimit = 122; // letter 'z
-        return new Random().ints(leftLimit,rightLimit + 1)
-                .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
-                .limit(length)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                .toString();
-    }
 
     @Transactional
     public String createWallet(String id) throws NoSuchAlgorithmException {
@@ -48,6 +40,12 @@ public class WalletService {
         walletRepository.save(wallet);
 
         return before;
+    }
+
+    @Transactional
+    public boolean isValidWallet(String id, String wallet){
+        Optional<Wallet> result = walletRepository.getMyWallet(id, wallet);
+        return result.isPresent();
     }
 
 }
