@@ -1,8 +1,11 @@
 package com.metabus.dodream.config.path;
 
+import lombok.Getter;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+@Getter
 public class PathDeterminant {
     private String OS_TYPE;
 
