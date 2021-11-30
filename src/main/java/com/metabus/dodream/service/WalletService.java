@@ -26,7 +26,7 @@ public class WalletService {
     @Autowired
     WalletRepository walletRepository;
 
-    private final static int LENGTH = 10;
+    private final static int LENGTH = 64;
 
     @Transactional
     public String createWallet(String id) throws NoSuchAlgorithmException {
