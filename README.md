@@ -10,12 +10,11 @@
   윤승규
   <h4> 프론트엔드팀 레파지토리 </h4>
   https://github.com/nostaljic/dodream-app
-</div>
-
 
 ### DB 설계
 ![image](https://user-images.githubusercontent.com/54317409/160241351-6b67d6f1-9628-41f3-aeeb-75696656ea5c.png)
-
+  
+</div>
 
 #### 개발 API 목록
 - 로그인
